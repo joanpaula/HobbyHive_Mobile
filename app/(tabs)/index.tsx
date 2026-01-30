@@ -1,5 +1,6 @@
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
+import PostCard from '../postCard';
 
 export default function HomeScreen() {
 
@@ -36,32 +37,8 @@ export default function HomeScreen() {
 
             <FlatList
                 data={posts}
-                renderItem={({ item }) => {
-
-                    const mediaURL = !item.media_url || item.media_url.length === 0 ? ["No Media on this post"] : item.media_url.join(",");
-
-                    return (
-                        <View style={styles.container}>
-                            <Text>{item.username}</Text>
-                            <Text>{item.body_text}</Text>
-                            <Text>{mediaURL}</Text>
-                            <Text>{item.created_at}</Text>
-                        </View>
-                    )
-                }}
+                renderItem={({ item }) => <PostCard post={item} /> }
             />
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-    backgroundColor: "white",
-    outlineColor: "#FF5700",
-    outlineWidth: 1,
-    padding: 12,
-    marginVertical: 8,
-    marginHorizontal: 12,
-    borderRadius: 10,
-  }
-})
