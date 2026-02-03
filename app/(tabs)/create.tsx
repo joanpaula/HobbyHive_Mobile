@@ -35,7 +35,7 @@ export default function CreatePosts({ post }: { post: Post }) {
                 } as any);
             }
 
-            const response = await fetch("http://10.122.231.199:5000/posts/create", {
+            const response = await fetch("http://10.178.12.65:5000/posts/create", {
                 method: 'POST',
                 body: formData
             })

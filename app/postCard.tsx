@@ -1,5 +1,6 @@
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
 import { useEffect, useState } from 'react';
+import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 type Post = {
     id?: string;
@@ -15,7 +16,31 @@ export default function PostCard({ post }: { post: Post }) {
     return (
 
         <View style={styles.card}>
-            <Text style={styles.username}>{post.username}</Text>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+
+                <Text style={styles.username}>{post.username}</Text>
+
+                    <Menu>
+                        <MenuTrigger>
+                            <Text style={{fontSize: 18, padding: 8}}>⋮</Text>
+                        </MenuTrigger>
+
+                        <MenuOptions>
+
+                            <MenuOption onSelect={() => alert(`Edit ${post.id}`)}>
+                                <Text style={styles.option}>Edit</Text>
+                            </MenuOption>
+
+                            <MenuOption onSelect={() => alert(`Delete ${post.id}`)}>
+                                <Text style={styles.option}>Delete</Text>
+                            </MenuOption>
+
+                        </MenuOptions>
+                    </Menu>
+                
+
+            </View>
 
             <View>
                 <Text style={styles.bodyText}>{post.body_text}</Text>
@@ -61,5 +86,22 @@ const styles = StyleSheet.create({
         fontSize: 12,
         textAlign: 'right',
         marginBottom: 6
-    }
+    },
+    option: {
+        padding: 10,
+        fontSize: 16,
+    },
+
+
 })
+
+const triggerStyles = {
+    menuTrigger: {
+        color: 'white',
+        fontSize: 16
+    },
+    triggerWrapper: {
+        padding: 10,
+        borderRadius: 5
+    }
+}

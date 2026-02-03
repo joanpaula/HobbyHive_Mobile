@@ -1,4 +1,4 @@
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
 import { useEffect, useState } from 'react';
 import PostCard from '../postCard';
 
@@ -16,18 +16,19 @@ export default function HomeScreen() {
 
     const [posts, setPosts] = useState<Post[]>([]);
     const [error, setError] = useState<string | null>(null);
+    
 
     useEffect(() => {
-        fetch("http://10.122.231.199:5000/posts")
-        .then(res => res.json())
-        .then (data => {
-            console.log("Posts: ", data);
-            setPosts(data);
-        })
-        .catch(err => {
-            console.error(err);
-            setError("Failed to load posts");
-        });
+        fetch("http://10.178.12.65:5000/posts")
+            .then(res => res.json())
+            .then(data => {
+                console.log("Posts: ", data);
+                setPosts(data);
+            })
+            .catch(err => {
+                console.error(err);
+                setError("Failed to load posts");
+            });
     }, []);
 
     return (
@@ -37,8 +38,11 @@ export default function HomeScreen() {
 
             <FlatList
                 data={posts}
-                renderItem={({ item }) => <PostCard post={item} /> }
+                renderItem={({ item }) => <PostCard post={item} />}
             />
+
+            
+
         </View>
     );
 }
