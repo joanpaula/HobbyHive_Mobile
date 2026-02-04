@@ -1,11 +1,11 @@
-import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Pressable, RefreshControl } from 'react-native';
 import { useEffect, useState } from 'react';
 import PostCard from '../postCard';
 
 export default function HomeScreen() {
 
     type Post = {
-        id?: string;
+        _id: string;
         user_id: string;
         username: string;
         body_text: string;
@@ -38,7 +38,26 @@ export default function HomeScreen() {
 
             <FlatList
                 data={posts}
+                keyExtractor={(item) => item._id}
                 renderItem={({ item }) => <PostCard post={item} />}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={false}
+                        onRefresh={() => {
+                            fetch("http://10.178.12.65:5000/posts")
+                                .then(res => res.json())
+                                .then(data => {
+                                    console.log("Posts refreshed: ", data);
+                                    setPosts(data);
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    setError("Failed to refresh posts");
+                                });
+                        }}
+                        colors={['#FF5700']}
+                    />
+                }
             />
 
             

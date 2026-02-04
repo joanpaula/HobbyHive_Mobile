@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 type Post = {
-    id?: string;
+    _id: string;
     user_id: string;
     username: string;
     body_text: string;
@@ -12,6 +12,23 @@ type Post = {
 };
 
 export default function PostCard({ post }: { post: Post }) {
+
+    const deletePost = async (postId: string) => {
+            try {
+                const response = await fetch(`http://10.178.12.65:5000/posts/${postId}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) {
+                    console.error("Failed to delete post:", await response.text());
+                    return;
+                } else{
+                    console.log("Post deleted successfully");
+                }
+                
+            } catch (error) {
+                console.error("Error deleting post:", error);
+            }
+        }
 
     return (
 
@@ -28,11 +45,11 @@ export default function PostCard({ post }: { post: Post }) {
 
                         <MenuOptions>
 
-                            <MenuOption onSelect={() => alert(`Edit ${post.id}`)}>
+                            <MenuOption onSelect={() => alert(`Edit ${post._id}`)}>
                                 <Text style={styles.option}>Edit</Text>
                             </MenuOption>
 
-                            <MenuOption onSelect={() => alert(`Delete ${post.id}`)}>
+                            <MenuOption onSelect={() => { alert("deleted " + post._id); deletePost(post._id); }}>
                                 <Text style={styles.option}>Delete</Text>
                             </MenuOption>
 
@@ -45,7 +62,7 @@ export default function PostCard({ post }: { post: Post }) {
             <View>
                 <Text style={styles.bodyText}>{post.body_text}</Text>
 
-                {post.media_url.length === 0 ? (
+                {(post.media_url || []).length === 0 ? (
                     <Text style={styles.noMedia}>(No Media on this post)</Text>
                 ) : (
                     <Text >{post.media_url.join(",")}</Text>
