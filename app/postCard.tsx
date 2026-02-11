@@ -1,6 +1,7 @@
 import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
-import { useEffect, useState } from 'react';
-import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+import { router } from 'expo-router';
+import { createApiClient } from '@/services/apiClient';
 
 type Post = {
     _id: string;
@@ -13,22 +14,18 @@ type Post = {
 
 export default function PostCard({ post }: { post: Post }) {
 
-    const deletePost = async (postId: string) => {
-            try {
-                const response = await fetch(`http://10.178.12.65:5000/posts/${postId}`, {
-                    method: 'DELETE'
-                });
-                if (!response.ok) {
-                    console.error("Failed to delete post:", await response.text());
-                    return;
-                } else{
-                    console.log("Post deleted successfully");
-                }
-                
-            } catch (error) {
-                console.error("Error deleting post:", error);
+    const apiClient = createApiClient("json")
+
+    const deletePost = async () => {
+        
+            const response = await apiClient.delete(`/posts/${post._id}`) 
+
+            if (response.status) {
+                router.replace("/(tabs)")
             }
-        }
+
+        } 
+    
 
     return (
 
@@ -38,24 +35,32 @@ export default function PostCard({ post }: { post: Post }) {
 
                 <Text style={styles.username}>{post.username}</Text>
 
-                    <Menu>
-                        <MenuTrigger>
-                            <Text style={{fontSize: 18, padding: 8}}>⋮</Text>
-                        </MenuTrigger>
+                <Menu>
+                    <MenuTrigger>
+                        <Text style={{ fontSize: 18, padding: 8 }}>⋮</Text>
+                    </MenuTrigger>
 
-                        <MenuOptions>
+                    <MenuOptions>
 
-                            <MenuOption onSelect={() => alert(`Edit ${post._id}`)}>
-                                <Text style={styles.option}>Edit</Text>
-                            </MenuOption>
+                        <MenuOption onSelect={() => {
+                            alert("Editing post " + post._id);
+                            router.push({
+                                pathname: '/edit',
+                                params: { id: post._id, post: JSON.stringify(post) }
+                            });
+                        }}>
+                            <Text style={styles.option}>Edit</Text>
+                        </MenuOption>
 
-                            <MenuOption onSelect={() => { alert("deleted " + post._id); deletePost(post._id); }}>
-                                <Text style={styles.option}>Delete</Text>
-                            </MenuOption>
+                        <MenuOption onSelect={() => { 
+                            alert("deleted " + post._id); 
+                            deletePost(); 
+                            }}>
+                            <Text style={styles.option}>Delete</Text>
+                        </MenuOption>
 
-                        </MenuOptions>
-                    </Menu>
-                
+                    </MenuOptions>
+                </Menu>
 
             </View>
 
@@ -111,14 +116,3 @@ const styles = StyleSheet.create({
 
 
 })
-
-const triggerStyles = {
-    menuTrigger: {
-        color: 'white',
-        fontSize: 16
-    },
-    triggerWrapper: {
-        padding: 10,
-        borderRadius: 5
-    }
-}

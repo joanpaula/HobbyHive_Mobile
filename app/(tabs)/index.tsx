@@ -1,6 +1,7 @@
 import { View, Text, FlatList, StyleSheet, Pressable, RefreshControl } from 'react-native';
 import { useEffect, useState } from 'react';
 import PostCard from '../postCard';
+import { createApiClient } from '@/services/apiClient';
 
 export default function HomeScreen() {
 
@@ -16,20 +17,23 @@ export default function HomeScreen() {
 
     const [posts, setPosts] = useState<Post[]>([]);
     const [error, setError] = useState<string | null>(null);
-    
+
+    const apiClient = createApiClient();
+
 
     useEffect(() => {
-        fetch("http://10.178.12.65:5000/posts")
-            .then(res => res.json())
-            .then(data => {
-                console.log("Posts: ", data);
-                setPosts(data);
-            })
-            .catch(err => {
-                console.error(err);
-                setError("Failed to load posts");
-            });
+        handleRefresh();
     }, []);
+
+    const handleRefresh = async () => {
+
+        const response = await apiClient.get("/posts")
+        if (response.status) {
+            setPosts(response.data)
+        } else {
+            setError("Failed to refresh posts")
+        }
+    }
 
     return (
         <View>
@@ -43,24 +47,11 @@ export default function HomeScreen() {
                 refreshControl={
                     <RefreshControl
                         refreshing={false}
-                        onRefresh={() => {
-                            fetch("http://10.178.12.65:5000/posts")
-                                .then(res => res.json())
-                                .then(data => {
-                                    console.log("Posts refreshed: ", data);
-                                    setPosts(data);
-                                })
-                                .catch(err => {
-                                    console.error(err);
-                                    setError("Failed to refresh posts");
-                                });
-                        }}
+                        onRefresh={handleRefresh}
                         colors={['#FF5700']}
                     />
                 }
             />
-
-            
 
         </View>
     );
