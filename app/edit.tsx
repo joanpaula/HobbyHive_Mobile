@@ -35,7 +35,7 @@ export default function EditPost() {
 
         setBodyText(bodyText);
 
-        const response = await apiClient.put(`/posts/${id}`, { body_text: bodyText });
+        const response = await apiClient.put(`/api/v1.0/posts/${id}`, { body_text: bodyText });
         console.log(response.data)
 
         if (response.status) {

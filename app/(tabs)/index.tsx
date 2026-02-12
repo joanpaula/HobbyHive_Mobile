@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { View, Text, FlatList, StyleSheet, Pressable, RefreshControl } from 'react-native';
 import { useEffect, useState } from 'react';
 import PostCard from '../postCard';
@@ -14,6 +15,7 @@ export default function HomeScreen() {
         created_at: string;
     };
 
+    const router = useRouter();
 
     const [posts, setPosts] = useState<Post[]>([]);
     const [error, setError] = useState<string | null>(null);
@@ -27,7 +29,7 @@ export default function HomeScreen() {
 
     const handleRefresh = async () => {
 
-        const response = await apiClient.get("/posts")
+        const response = await apiClient.get("/api/v1.0/posts")
         if (response.status) {
             setPosts(response.data)
         } else {

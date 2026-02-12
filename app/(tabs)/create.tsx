@@ -6,15 +6,6 @@ import * as MediaLibrary from 'expo-media-library';
 import { Button, Image } from 'react-native'
 import { createApiClient } from '@/services/apiClient';
 
-type Post = {
-    _id: string;
-    user_id: string;
-    username: string;
-    body_text: string;
-    media_url: string[];
-    created_at: string;
-};
-
 export default function CreatePosts() {
 
     const router = useRouter();
@@ -34,7 +25,7 @@ export default function CreatePosts() {
         formData.append("username", username);
         formData.append("body_text", bodyText);
 
-        const response = await apiClient.post("/posts/create", formData)
+        const response = await apiClient.post("/api/v1.0/posts/create", formData)
         if (response.status) {
             alert("Post created successfully!");
             setBodyText("");

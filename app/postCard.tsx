@@ -18,7 +18,7 @@ export default function PostCard({ post }: { post: Post }) {
 
     const deletePost = async () => {
         
-            const response = await apiClient.delete(`/posts/${post._id}`) 
+            const response = await apiClient.delete(`/api/v1.0/posts/${post._id}`) 
 
             if (response.status) {
                 router.replace("/(tabs)")
@@ -30,6 +30,11 @@ export default function PostCard({ post }: { post: Post }) {
     return (
 
         <View style={styles.card}>
+
+            <Pressable
+                onPress={() => router.push("/auth/login")}>
+                <Text>Login</Text>
+            </Pressable>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 
