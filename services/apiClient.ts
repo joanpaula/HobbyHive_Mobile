@@ -6,14 +6,12 @@ const createApiClient = (dataType: DataType = "form-data") => {
   const instance = axios.create({
     // home
     baseURL: "http://10.178.12.65:5000",
-
     timeout: 1000,
     headers: {
       "Content-Type": `${
         dataType === "json" ? "application/json" : "multipart/form-data"
       }`,
-      Accept: "application/json",
-      //   Authorization: `Bearer ${token}`,
+      Accept: "application/json"
     },
   });
 

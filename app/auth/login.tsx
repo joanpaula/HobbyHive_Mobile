@@ -1,8 +1,29 @@
 import { AntDesign, Feather, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
+import { useState } from 'react';
+import { createApiClient } from '@/services/apiClient';
+import { useRouter } from 'expo-router';
+
+const apiClient = createApiClient("json")
 
 export default function loginPage() {
-    return(
+
+    const [identifier, setIdentifier] = useState("");
+    const [password, setPassword] = useState("");
+
+    const router = useRouter();
+
+    const handleLogin = async () => {
+
+        const response = await apiClient.post("/api/v1.0/login", { identifier, password })
+
+        if (response.status) {
+            Alert.alert("Login successful", `Welcome back!`)
+            router.replace("/(tabs)")
+        }
+    }
+
+    return (
         <View style={styles.container}>
             <View>
                 <Text style={styles.header}>
@@ -18,6 +39,7 @@ export default function loginPage() {
                     placeholderTextColor="#999"
                     keyboardType='email-address'
                     autoCapitalize='none'
+                    onChangeText={setIdentifier}
                 />
             </View>
 
@@ -27,27 +49,31 @@ export default function loginPage() {
                     style={styles.textinput}
                     placeholder='Enter your password'
                     placeholderTextColor="#999"
+                    onChangeText={setPassword}
                 />
             </View>
 
-
-            <View style={{padding: 10}}>
-                <Text style={{textAlign: "right"}}>Forgot password?</Text>
+            <View style={{ padding: 10 }}>
+                <Text style={{ textAlign: "right" }}>Forgot password?</Text>
             </View>
 
-            <View style={{padding: 10}}>
+            <View style={{ padding: 10 }}>
                 <Pressable
-                    // onPress={"..."}
+                    onPress={handleLogin}
                     style={styles.button}
                 >
                     <Text style={styles.buttonText}>Sign In</Text>
                 </Pressable>
             </View>
 
-            <View>
-                <Text style={styles.signupPrompt}>Don't have an account? Sign up</Text>
+            <View style={{padding: 10}}>
+                <Text
+                    onPress={() => router.push("/auth/signup")}
+                    style={styles.signupPrompt}>Don't have an account?
+                    <Text style={{ fontWeight: "bold" }}>Sign up</Text>
+                </Text>
             </View>
-            
+
         </View>
     )
 }
@@ -96,7 +122,7 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     signupPrompt: {
-        padding: 10, 
+        padding: 10,
         textAlign: "center"
     }
 

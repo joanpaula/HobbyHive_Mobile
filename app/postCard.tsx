@@ -31,11 +31,6 @@ export default function PostCard({ post }: { post: Post }) {
 
         <View style={styles.card}>
 
-            <Pressable
-                onPress={() => router.push("/auth/login")}>
-                <Text>Login</Text>
-            </Pressable>
-
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 
                 <Text style={styles.username}>{post.username}</Text>

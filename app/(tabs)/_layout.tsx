@@ -1,13 +1,23 @@
 import { Tabs } from "expo-router";
 import { AntDesign, Feather, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Text, Pressable, View } from 'react-native';
+import { router } from 'expo-router';
 
 export default function TabLayout() {
     return (
         <Tabs
-        
-        screenOptions={{
-            tabBarInactiveTintColor: 'black'
-        }}
+            screenOptions={{
+                tabBarInactiveTintColor: 'black',
+                headerRight: () => (
+                    <View>
+                        <Pressable
+                            onPress={() => router.push("/auth/login")}
+                            style={{ marginRight: 16, padding: 6, backgroundColor: "#ff5700", borderRadius: 15 }}>
+                            <Text style={{ color: "white" }}>Login</Text>
+                        </Pressable>
+                    </View>
+                )
+            }}
 
         >
             <Tabs.Screen
@@ -18,7 +28,7 @@ export default function TabLayout() {
                     headerTintColor: '#FF5700',
                     tabBarIcon: ({ color }) => <AntDesign name="home" size={24} color={color} />
                 }} />
-                <Tabs.Screen
+            <Tabs.Screen
                 name="communities"
                 options={{
                     title: 'Hives',
@@ -26,7 +36,7 @@ export default function TabLayout() {
                     headerTintColor: '#FF5700',
                     tabBarIcon: ({ color }) => <MaterialCommunityIcons name="beehive-outline" size={24} color={color} />
                 }} />
-                <Tabs.Screen
+            <Tabs.Screen
                 name="create"
                 options={{
                     title: 'Create',
@@ -34,7 +44,7 @@ export default function TabLayout() {
                     headerTintColor: '#FF5700',
                     tabBarIcon: ({ color }) => <Feather name="plus-circle" size={24} color={color} />
                 }} />
-                <Tabs.Screen
+            <Tabs.Screen
                 name="messaging"
                 options={{
                     title: 'Messages',
@@ -42,7 +52,7 @@ export default function TabLayout() {
                     headerTintColor: '#FF5700',
                     tabBarIcon: ({ color }) => <AntDesign name="message" size={24} color={color} />
                 }} />
-                <Tabs.Screen
+            <Tabs.Screen
                 name="profile"
                 options={{
                     title: 'Profile',
