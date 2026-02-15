@@ -5,6 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { Button, Image } from 'react-native'
 import { createApiClient } from '@/services/apiClient';
+import { getContentType } from '@/services/globals';
 
 export default function CreatePosts() {
 
@@ -12,45 +13,90 @@ export default function CreatePosts() {
 
     const [bodyText, setBodyText] = useState("");
 
-    // const [image, setImage] = useState<string | null>(null);
-    // const [albums, setAlbums] = useState(null)
+    const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([]);
+    const [filename, setFilename] = useState("");
 
-    const apiClient = createApiClient("form-data")
+    const postApiClient = createApiClient("form-data")
+    const imageApiClient = createApiClient("json")
 
     const handleCreatePost = async () => {
 
         const username = "Anonymous"
 
-        const formData = new FormData();
-        formData.append("username", username);
-        formData.append("body_text", bodyText);
+        let mediaKeys: string[] = [];
 
-        const response = await apiClient.post("/api/v1.0/posts/create", formData)
-        if (response.status) {
+        for (const image of images) {
+
+            if (image) {
+                const contentType = getContentType(image.fileName!, image?.mimeType)
+
+                const presignRes = await imageApiClient.post("/api/v1.0/presign-url", {
+                    filename: image.fileName,
+                    contentType: contentType
+                });
+
+                const { uploadUrl, key } = presignRes.data;
+
+                const fileResponse = await fetch(image.uri);
+                const blob = await fileResponse.blob();
+
+                const s3_upload_repsonse = await fetch(uploadUrl, {
+                    method: "PUT",
+                    body: blob,
+                    headers: {
+                        "Content-Type": contentType
+                    }
+                });
+
+                mediaKeys.push(key)
+
+            }
+        }
+
+        const postFormData = new FormData();
+        postFormData.append("username", username);
+        postFormData.append("body_text", bodyText);
+
+        mediaKeys.forEach((key) => {
+            postFormData.append("media_url", key);
+        })
+
+        try {
+            const response = await postApiClient.post("/api/v1.0/posts/create", postFormData)
+            console.log(response.data)
             alert("Post created successfully!");
             setBodyText("");
+            setImages([])
             router.replace("/(tabs)");
+        } catch (error: any) {
+            console.log(error.response?.status)
+            console.log(error.response?.data)
         }
 
     }
 
-    // const takePhoto = async () => {
-    //     const result = await ImagePicker.launchCameraAsync();
-    //     console.log("Result from camera:", result);
-    //     if (!result.canceled) {
-    //         console.log("Image selected:", result.assets[0].uri);
-    //         setImage(result.assets[0].uri);
-    //     }
-    // }
+    const takePhoto = async () => {
+        const result = await ImagePicker.launchCameraAsync();
+        console.log("Result from camera:", result);
+        if (!result.canceled) {
+            console.log("Image selected:", result.assets[0].uri);
+            setImages(prev => [...prev, ...result.assets]);
+            console.log("Images selected:", [...images, ...result.assets]);
+        }
+    }
 
-    // const pickFromGallery = async () => {
-    //     const result = await ImagePicker.launchImageLibraryAsync();
-    //     console.log("Result from gallery:", result);
-    //     if (!result.canceled) {
-    //         console.log("Image selected:", result.assets[0].uri);
-    //         setImage(result.assets[0].uri);
-    //     }
-    // }
+    const pickFromGallery = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            allowsMultipleSelection: true
+        });
+        console.log("Result from gallery:", result);
+        if (!result.canceled) {
+            setImages(prev => [...prev, ...result.assets]);
+            console.log("Images selected:", [...images, ...result.assets]);
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -82,16 +128,29 @@ export default function CreatePosts() {
                 multiline
             />
 
-            {/* <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 12 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 12 }}>
                 <Button title="Take Photo" onPress={takePhoto} />
                 <Button title="Select Image From Gallery" onPress={pickFromGallery} />
 
-            </View> */}
+            </View>
 
-            {/* <View>
+            <View>
                 <Text>Selected Image:</Text>
-                {image && <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />}
-            </View> */}
+                {images && images.length > 0 ? (
+                    images.map((image, index) => (
+                        <Image
+                            key={index}
+                            source={{ uri: image.uri }}
+                            style={{
+                                width: 100,
+                                height: 100,
+                                padding: 10,
+                                // flex: 1, 
+                                // flexDirection: 'column', 
+                                // flexWrap: 'wrap' 
+                            }}
+                        />))) : (<Text>(No images selected)</Text>)}
+            </View>
 
         </View>
 

@@ -1,4 +1,4 @@
-import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Pressable, Image } from 'react-native';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import { router } from 'expo-router';
 import { createApiClient } from '@/services/apiClient';
@@ -17,15 +17,15 @@ export default function PostCard({ post }: { post: Post }) {
     const apiClient = createApiClient("json")
 
     const deletePost = async () => {
-        
-            const response = await apiClient.delete(`/api/v1.0/posts/${post._id}`) 
 
-            if (response.status) {
-                router.replace("/(tabs)")
-            }
+        const response = await apiClient.delete(`/api/v1.0/posts/${post._id}`)
 
-        } 
-    
+        if (response.status) {
+            router.replace("/(tabs)")
+        }
+
+    }
+
 
     return (
 
@@ -52,10 +52,10 @@ export default function PostCard({ post }: { post: Post }) {
                             <Text style={styles.option}>Edit</Text>
                         </MenuOption>
 
-                        <MenuOption onSelect={() => { 
-                            alert("deleted " + post._id); 
-                            deletePost(); 
-                            }}>
+                        <MenuOption onSelect={() => {
+                            alert("deleted " + post._id);
+                            deletePost();
+                        }}>
                             <Text style={styles.option}>Delete</Text>
                         </MenuOption>
 
@@ -67,10 +67,20 @@ export default function PostCard({ post }: { post: Post }) {
             <View>
                 <Text style={styles.bodyText}>{post.body_text}</Text>
 
-                {(post.media_url || []).length === 0 ? (
-                    <Text style={styles.noMedia}>(No Media on this post)</Text>
+                {post.media_url && post.media_url.length > 0 ? (
+                    post.media_url.map((url, index) => {
+                        console.log("render url", url);
+                        return(
+                            <Image
+                                key={index}
+                                source={{ uri: url }}
+                                style={{ width: 200, height: 200 }}
+                            />
+                        );
+
+                    })
                 ) : (
-                    <Text >{post.media_url.join(",")}</Text>
+                    <Text style={styles.noMedia}>(No Media on this post)</Text>
                 )}
 
             </View>
