@@ -1,7 +1,9 @@
-import { View, Text, FlatList, StyleSheet, Pressable, Image } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Pressable, Image, TouchableOpacity, Modal } from 'react-native';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import { router } from 'expo-router';
 import { createApiClient } from '@/services/apiClient';
+import { Video } from 'expo-av';
+import { useState } from 'react';
 
 type Post = {
     _id: string;
@@ -15,6 +17,7 @@ type Post = {
 export default function PostCard({ post }: { post: Post }) {
 
     const apiClient = createApiClient("json")
+    const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
     const deletePost = async () => {
 
@@ -26,6 +29,56 @@ export default function PostCard({ post }: { post: Post }) {
 
     }
 
+    const renderMedia = () => {
+        if (!post?.media_url || post.media_url.length === 0) {
+            return (
+                <Text style={styles.noMedia}>(No Media on this post)</Text>
+            )
+        }
+
+        return (
+            <>
+                {post.media_url.map((url, index) => {
+                    const cleanUrl = url.split('?')[0];
+
+                    if (cleanUrl.match(/\.(mp4|mov|webm)$/i)) {
+                        return (
+                            <Video
+                                key={index}
+                                source={{ uri: url }}
+                                style={{ width: 200, height: 200 }}
+                                useNativeControls
+                            />
+                        );
+                    } else {
+                        return (
+                            <TouchableOpacity key={index} onPress={() => setSelectedImage(url)}>
+                                <Image
+                                    source={{ uri: url }}
+                                    style={{ width: 200, height: 200 }}
+                                />
+                            </TouchableOpacity>
+                        );
+
+                    }
+                })}
+
+                <Modal visible={!!selectedImage} transparent={true}>
+                    <TouchableOpacity 
+                    style={{flex: 1, backgroundColor: "black", justifyContent: "center", alignItems: "center"}}
+                    onPress={() => setSelectedImage(null)}>
+                        {selectedImage && (
+                            <Image
+                                source={{uri: selectedImage}}
+                                style={{width: '90%', height: '80%', resizeMode: 'contain'}}
+                            />
+                        )}
+                    </TouchableOpacity>
+                </Modal>
+            </>
+        )
+
+    }
 
     return (
 
@@ -65,23 +118,10 @@ export default function PostCard({ post }: { post: Post }) {
             </View>
 
             <View>
+
                 <Text style={styles.bodyText}>{post.body_text}</Text>
 
-                {post.media_url && post.media_url.length > 0 ? (
-                    post.media_url.map((url, index) => {
-                        console.log("render url", url);
-                        return(
-                            <Image
-                                key={index}
-                                source={{ uri: url }}
-                                style={{ width: 200, height: 200 }}
-                            />
-                        );
-
-                    })
-                ) : (
-                    <Text style={styles.noMedia}>(No Media on this post)</Text>
-                )}
+                <View>{renderMedia()}</View>
 
             </View>
 

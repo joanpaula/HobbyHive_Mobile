@@ -87,7 +87,7 @@ export default function CreatePosts() {
 
     const pickFromGallery = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
+            mediaTypes: ['images', 'videos'],
             allowsEditing: true,
             allowsMultipleSelection: true
         });

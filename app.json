@@ -53,9 +53,14 @@
           "savePhotosPermission": "The app saves photos to your media library.",
           "cameraRollPermission": "The app accesses your camera roll to let you share photos with your friends.",
           "isAccessMediaLocationEnabled": true,
-          "granularPermissions": ["audio", "video", "photos"]
+          "granularPermissions": [
+            "audio",
+            "video",
+            "photos"
+          ]
         }
-      ]
+      ],
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,
