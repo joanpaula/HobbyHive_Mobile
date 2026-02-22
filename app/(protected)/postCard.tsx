@@ -24,7 +24,7 @@ export default function PostCard({ post }: { post: Post }) {
         const response = await apiClient.delete(`/api/v1.0/posts/${post._id}`)
 
         if (response.status) {
-            router.replace("/(tabs)")
+            router.replace("/(protected)/(tabs)")
         }
 
     }

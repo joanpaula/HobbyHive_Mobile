@@ -39,7 +39,7 @@ export default function EditPost() {
         console.log(response.data)
 
         if (response.status) {
-            router.replace("/(tabs)")
+            router.replace("/(protected)/(tabs)")
         }
     }
 

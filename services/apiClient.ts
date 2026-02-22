@@ -1,4 +1,6 @@
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AxiosRequestConfig } from "axios";
 
 type DataType = "form-data" | "json";
 
@@ -6,7 +8,8 @@ const createApiClient = (dataType: DataType = "form-data") => {
   const instance = axios.create({
     // home
     baseURL: "http://10.178.12.65:5000",
-    timeout: 1000,
+    // baseURL: "http://10.88.168.199:5000",
+    timeout: 5000,
     headers: {
       "Content-Type": `${
         dataType === "json" ? "application/json" : "multipart/form-data"
@@ -15,8 +18,23 @@ const createApiClient = (dataType: DataType = "form-data") => {
     },
   });
 
+  instance.interceptors.request.use(
+    async (config) => {
+      const token = await AsyncStorage.getItem("auth_token");
+
+      if (token) {
+        config.headers = {
+          ...(config.headers as any),
+          Authorization: `Bearer ${token}`
+        }
+      };
+
+      return config;
+    },
+  );
+
   return {
-    get: async (url: string) => {
+    get: async (url: string, config?: AxiosRequestConfig) => {
       try {
         const res = await instance.get(url);
         console.log(res);

@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { AntDesign, Feather, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign, Feather, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 
@@ -45,12 +45,12 @@ export default function TabLayout() {
                     tabBarIcon: ({ color }) => <Feather name="plus-circle" size={24} color={color} />
                 }} />
             <Tabs.Screen
-                name="messaging"
+                name="places"
                 options={{
-                    title: 'Messages',
+                    title: 'Places',
                     headerTitle: 'HobbyHive',
                     headerTintColor: '#FF5700',
-                    tabBarIcon: ({ color }) => <AntDesign name="message" size={24} color={color} />
+                    tabBarIcon: ({ color }) => <AntDesign name="environment" size={24} color={color} />
                 }} />
             <Tabs.Screen
                 name="profile"

@@ -1,12 +1,15 @@
 import { AntDesign, Feather, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { createApiClient } from '@/services/apiClient';
 import { useRouter } from 'expo-router';
+import { AuthContext } from '@/utils/authContext';
 
 const apiClient = createApiClient("json")
 
 export default function loginPage() {
+
+    const authContext = useContext(AuthContext);
 
     const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
@@ -17,11 +20,21 @@ export default function loginPage() {
 
         const response = await apiClient.post("/api/v1.0/login", { identifier, password })
 
-        if (response.status) {
-            Alert.alert("Login successful", `Welcome back!`)
-            router.replace("/(tabs)")
+        try {
+            if (response.status && response.data.token) {
+                const token = response.data.token;
+                authContext.logIn(token);
+                Alert.alert("Login successful", `Welcome back!`)
+                // await authContext.logIn(response.data.token)
+                // router.replace("/(protected)/(tabs)")
+            } else {
+                Alert.alert("Login failed", response.data.message || "Unknown error")
+            }
+        } catch (error) {
+            console.error(error)
+            Alert.alert("Login error", "Check your credentials and try again.")
         }
-    }
+    };
 
     return (
         <View style={styles.container}>
@@ -66,7 +79,7 @@ export default function loginPage() {
                 </Pressable>
             </View>
 
-            <View style={{padding: 10}}>
+            <View style={{ padding: 10 }}>
                 <Text
                     onPress={() => router.push("/auth/signup")}
                     style={styles.signupPrompt}>Don't have an account?

@@ -67,7 +67,7 @@ export default function CreatePosts() {
             alert("Post created successfully!");
             setBodyText("");
             setImages([])
-            router.replace("/(tabs)");
+            router.replace("/(protected)/(tabs)");
         } catch (error: any) {
             console.log(error.response?.status)
             console.log(error.response?.data)
@@ -145,9 +145,6 @@ export default function CreatePosts() {
                                 width: 100,
                                 height: 100,
                                 padding: 10,
-                                // flex: 1, 
-                                // flexDirection: 'column', 
-                                // flexWrap: 'wrap' 
                             }}
                         />))) : (<Text>(No images selected)</Text>)}
             </View>
