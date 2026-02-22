@@ -14,24 +14,19 @@ const createApiClient = (dataType: DataType = "form-data") => {
       "Content-Type": `${
         dataType === "json" ? "application/json" : "multipart/form-data"
       }`,
-      Accept: "application/json"
+      Accept: "application/json",
     },
   });
 
-  instance.interceptors.request.use(
-    async (config) => {
-      const token = await AsyncStorage.getItem("auth_token");
+  instance.interceptors.request.use(async (config) => {
+    const token = await AsyncStorage.getItem("auth_token");
 
-      if (token) {
-        config.headers = {
-          ...(config.headers as any),
-          Authorization: `Bearer ${token}`
-        }
-      };
+    if (token) {
+      (config.headers as any)["x-access-token"] = token;
+    }
 
-      return config;
-    },
-  );
+    return config;
+  });
 
   return {
     get: async (url: string, config?: AxiosRequestConfig) => {
@@ -76,18 +71,20 @@ const createApiClient = (dataType: DataType = "form-data") => {
         }
       } catch (error) {
         console.log(error);
-          return errorResponse(error || null);
+        return errorResponse(error || null);
       }
     },
     delete: async (url: string) => {
       const res = await instance.delete(url);
       console.log(res);
-      try {if (res.status) {
-        return successResponse(res.data);
-      } else {
-        console.log(res);
-        return errorResponse(res.data);
-      } } catch (error) {
+      try {
+        if (res.status) {
+          return successResponse(res.data);
+        } else {
+          console.log(res);
+          return errorResponse(res.data);
+        }
+      } catch (error) {
         console.log(error);
         return errorResponse(error || null);
       }

@@ -2,19 +2,22 @@ import { Tabs } from "expo-router";
 import { AntDesign, Feather, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, Pressable, View } from 'react-native';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useContext } from 'react';
+import { AuthContext } from '@/utils/authContext';
 
 export default function TabLayout() {
+    const {user} = useContext(AuthContext);
     return (
         <Tabs
             screenOptions={{
                 tabBarInactiveTintColor: 'black',
                 headerRight: () => (
                     <View>
-                        <Pressable
-                            onPress={() => router.push("/auth/login")}
-                            style={{ marginRight: 16, padding: 6, backgroundColor: "#ff5700", borderRadius: 15 }}>
-                            <Text style={{ color: "white" }}>Login</Text>
-                        </Pressable>
+                        <Text
+                            style={{fontWeight: "bold", fontSize: 20, marginRight: 16}}>
+                                {user?.username}
+                        </Text>
                     </View>
                 )
             }}
@@ -40,7 +43,7 @@ export default function TabLayout() {
                 name="create"
                 options={{
                     title: 'Create',
-                    headerTitle: 'HobbyHive',
+                    headerTitle: 'Create',
                     headerTintColor: '#FF5700',
                     tabBarIcon: ({ color }) => <Feather name="plus-circle" size={24} color={color} />
                 }} />
@@ -48,7 +51,7 @@ export default function TabLayout() {
                 name="places"
                 options={{
                     title: 'Places',
-                    headerTitle: 'HobbyHive',
+                    headerTitle: 'Nearby Places',
                     headerTintColor: '#FF5700',
                     tabBarIcon: ({ color }) => <AntDesign name="environment" size={24} color={color} />
                 }} />
@@ -56,7 +59,7 @@ export default function TabLayout() {
                 name="profile"
                 options={{
                     title: 'Profile',
-                    headerTitle: 'HobbyHive',
+                    headerTitle: 'Profile',
                     headerTintColor: '#FF5700',
                     tabBarIcon: ({ color }) => <FontAwesome5 name="user" size={24} color={color} />
                 }} />

@@ -19,6 +19,14 @@ export default function PostCard({ post }: { post: Post }) {
     const apiClient = createApiClient("json")
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
+     const formatDate = (isoDate: string) => {
+        const date = new Date(isoDate);
+        const day = date.getDate().toString().padStart(2,"0");
+        const month = date.toLocaleDateString("default", {month: "numeric"});
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    };
+    
     const deletePost = async () => {
 
         const response = await apiClient.delete(`/api/v1.0/posts/${post._id}`)
@@ -27,7 +35,7 @@ export default function PostCard({ post }: { post: Post }) {
             router.replace("/(protected)/(tabs)")
         }
 
-    }
+    };
 
     const renderMedia = () => {
         if (!post?.media_url || post.media_url.length === 0) {
@@ -125,7 +133,7 @@ export default function PostCard({ post }: { post: Post }) {
 
             </View>
 
-            <Text style={styles.date}>{post.created_at}</Text>
+            <Text style={styles.date}>{formatDate(post.created_at)}</Text>
         </View>
 
     );

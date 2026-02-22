@@ -21,9 +21,9 @@ export default function loginPage() {
         const response = await apiClient.post("/api/v1.0/login", { identifier, password })
 
         try {
-            if (response.status && response.data.token) {
+            if (response.status) {
                 const token = response.data.token;
-                authContext.logIn(token);
+                await authContext.logIn(token);
                 Alert.alert("Login successful", `Welcome back!`)
                 // await authContext.logIn(response.data.token)
                 // router.replace("/(protected)/(tabs)")

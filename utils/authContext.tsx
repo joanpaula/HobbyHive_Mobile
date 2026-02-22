@@ -2,30 +2,48 @@ import { useRouter } from "expo-router";
 import { createContext, PropsWithChildren, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createApiClient } from "@/services/apiClient";
+import {jwtDecode} from "jwt-decode"
 
 const authStorageKey = "auth_token";
 const userStorageKey = "user_info";
 
+type TokenPayload = {
+    sub: string;
+    user: string;
+    admin: boolean;
+    exp: number;
+};
+
+type UserType = {
+    _id: string;
+    name: string;
+    username: string;
+    password: any;
+    email: string;
+    admin?: boolean;
+    created_at: any;
+}
+
 type AuthState = {
     isLoggedIn: boolean;
     isReady: boolean;
-    user: any | null;
-    logIn: (token: string, user?: any) => void;
-    logOut: () => void;
+    user: UserType | null;
+    logIn: (token: string) => Promise<void>;
+    logOut: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthState>({
     isLoggedIn: false,
     isReady: false,
     user: null,
-    logIn: async () => { },
-    logOut: async () => { }
+    logIn: async () => {},
+    logOut: async () => {}
 })
 
 export function AuthProvider({ children }: PropsWithChildren) {
     const [isReady, setIsReady] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [user, setUser] = useState<any | null>(null);
+    const [user, setUser] = useState<UserType | null>(null);
 
     const router = useRouter();
 
@@ -55,13 +73,35 @@ export function AuthProvider({ children }: PropsWithChildren) {
         }
     };
 
-    const logIn = (token: string, userData?: any) => {
+    const fetchUser = async (id: string) => {
+        try {
+            const response = await apiClient.get(`/api/v1.0/users/${id}`)
+
+            if (response.status) {
+                setUser(response.data);
+                await storeUser(response.data);
+            }
+        } catch (error) {
+            console.log("Error fecthing user", error)
+        }
+    };
+
+    // const logIn = (token: string, userData?: any) => {
+    //     setIsLoggedIn(true);
+    //     setUser(userData ?? null);
+    //     storeToken(token);
+    //     if (userData) storeUser(userData);
+    //     router.replace("/(protected)/(tabs)");
+    // }
+
+    const logIn = async (token: string) => {
+        await storeToken(token);
         setIsLoggedIn(true);
-        setUser(userData ?? null);
-        storeToken(token);
-        if (userData) storeUser(userData);
+        const decoded: TokenPayload = jwtDecode(token);
+        const userId = decoded.sub;
+        await fetchUser(userId);
         router.replace("/(protected)/(tabs)");
-    }
+    };
 
     const logOut = async () => {
         setIsLoggedIn(false);
@@ -77,8 +117,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
                 const token = await AsyncStorage.getItem(authStorageKey);
                 const storedUser = await AsyncStorage.getItem(userStorageKey);
 
-                if (token) setIsLoggedIn(true);
-                if (storedUser) setUser(JSON.parse(storedUser));
+                if (token) {
+                    setIsLoggedIn(true);
+
+                    if (storedUser) {
+                        setUser(JSON.parse(storedUser));
+                    } else {
+                        const decoded: TokenPayload = jwtDecode(token);
+                        await fetchUser(decoded.sub);
+                    }
+                }
             } catch (error) {
                 console.log("Error loading auth state", error)
             } finally {

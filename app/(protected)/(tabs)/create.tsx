@@ -6,6 +6,8 @@ import * as MediaLibrary from 'expo-media-library';
 import { Button, Image } from 'react-native'
 import { createApiClient } from '@/services/apiClient';
 import { getContentType } from '@/services/globals';
+import { useContext } from 'react';
+import { AuthContext } from '@/utils/authContext';
 
 export default function CreatePosts() {
 
@@ -19,9 +21,11 @@ export default function CreatePosts() {
     const postApiClient = createApiClient("form-data")
     const imageApiClient = createApiClient("json")
 
-    const handleCreatePost = async () => {
+    const {user} = useContext(AuthContext);
 
-        const username = "Anonymous"
+    const username = user?.username ?? "";
+
+    const handleCreatePost = async () => {
 
         let mediaKeys: string[] = [];
 
@@ -116,7 +120,7 @@ export default function CreatePosts() {
             </View>
 
             <View>
-                <Text style={styles.username}>{"Anonymous"}</Text>
+                <Text style={styles.username}>{user?.username}</Text>
             </View>
 
             <TextInput

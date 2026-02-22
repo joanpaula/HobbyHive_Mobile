@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function UserProfile() {
 
     const authState = useContext(AuthContext);
-    const user = useContext(AuthContext);
+    const {user} = useContext(AuthContext);
 
     const apiClient = createApiClient()
 
@@ -18,7 +18,7 @@ export default function UserProfile() {
         return <Redirect href="/auth/login"/>
     }
 
-    if (!user) return <Text>Loading...</Text>
+    // if (!user) return <Text>Loading...</Text>
 
     const handleLogout = async () => {
         try {
@@ -34,6 +34,14 @@ export default function UserProfile() {
         } 
     }
 
+    const formatDate = (isoDate: string) => {
+        const date = new Date(isoDate);
+        const day = date.getDate().toString().padStart(2,"0");
+        const month = date.toLocaleDateString("default", {month: "short"});
+        const year = date.getFullYear();
+        return `${day} ${month} ${year}`;
+    };
+
     return (
         <ScrollView style={styles.container}>
             <View style={styles.profile}>
@@ -42,8 +50,8 @@ export default function UserProfile() {
                     source={require("../../../assets/images/1000590504.jpg")}
                     alt="profile Picture"
                 />
-                <Text style={styles.profileName}> @JJonDaBeat </Text>
-                <Text style={styles.profileEmail}>Active since: Oct 2025</Text>
+                <Text style={styles.profileName}> @{user?.username} </Text>
+                <Text style={styles.profileEmail}>Active since: {formatDate(user?.created_at)}</Text>
 
                 <TouchableOpacity
                     // onPress={}
@@ -62,21 +70,21 @@ export default function UserProfile() {
                     <View style={styles.inputFieldContainer}>
                         <Feather name="user" size={20} color="#999" />
                         {/* <TextInput/> */}
-                        <Text style={styles.inputText}>Joan Paula Izuchukwu</Text>
+                        <Text style={styles.inputText}>{user?.name}</Text>
                     </View>
 
                     <Text style={styles.inputFieldTitle}>Email</Text>
                     <View style={styles.inputFieldContainer}>
                         <Octicons name="mail" size={20} color="#999" />
                         {/* <TextInput/> */}
-                        <Text style={styles.inputText}>joanpaula@user.com</Text>
+                        <Text style={styles.inputText}>{user?.email}</Text>
                     </View>
 
                     <Text style={styles.inputFieldTitle}>Password</Text>
                     <View style={styles.inputFieldContainer}>
                         <Octicons name="lock" size={20} color="#999" />
                         {/* <TextInput/> */}
-                        <Text style={styles.inputText}>*****</Text>
+                        <Text style={styles.inputText}>{user?.password}</Text>
                     </View>
 
                 </View>
