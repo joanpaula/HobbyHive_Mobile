@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { View, Text, StyleSheet, TextInput, Pressable, Alert } from "react-native"
-import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Feather, AntDesign } from '@expo/vector-icons';
 import { createApiClient } from "@/services/apiClient";
 import { useRouter } from "expo-router";
 
@@ -12,6 +12,8 @@ export default function SignUpPage() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+
 
     const router = useRouter();
 
@@ -29,7 +31,11 @@ export default function SignUpPage() {
             Alert.alert("Signup successful", `Welcome to HobbyHive ${username}`)
             router.replace("/auth/login")
         }
-    }
+    };
+
+    const toggleShowPassword = () => {
+        setShowPassword(prev => !prev)
+    };
 
     return (
         <View style={styles.container}>
@@ -77,6 +83,12 @@ export default function SignUpPage() {
                     placeholder="Password"
                     placeholderTextColor="#999"
                     onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                />
+                <AntDesign
+                    name={showPassword ? "eye" : "eye-invisible"}
+                    size={24}
+                    onPress={toggleShowPassword}
                 />
             </View>
 

@@ -4,6 +4,7 @@ import { useContext, useState } from 'react';
 import { createApiClient } from '@/services/apiClient';
 import { useRouter } from 'expo-router';
 import { AuthContext } from '@/utils/authContext';
+// import AntDesign from '@expo/vector-icons/AntDesign';
 
 const apiClient = createApiClient("json")
 
@@ -13,6 +14,8 @@ export default function loginPage() {
 
     const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
+
+    const [showPassword, setShowPassword] = useState(false);
 
     const router = useRouter();
 
@@ -34,6 +37,10 @@ export default function loginPage() {
             console.error(error)
             Alert.alert("Login error", "Check your credentials and try again.")
         }
+    };
+
+    const toggleShowPassword = () => {
+        setShowPassword(prev => !prev)
     };
 
     return (
@@ -63,6 +70,12 @@ export default function loginPage() {
                     placeholder='Enter your password'
                     placeholderTextColor="#999"
                     onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                />
+                <AntDesign
+                    name={showPassword ? "eye" : "eye-invisible"}
+                    size={24}
+                    onPress={toggleShowPassword}
                 />
             </View>
 
