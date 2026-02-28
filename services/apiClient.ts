@@ -8,7 +8,7 @@ const createApiClient = (dataType: DataType = "form-data") => {
   const instance = axios.create({
     // home
     baseURL: "http://10.178.12.65:5000",
-    // baseURL: "http://10.88.168.199:5000",
+    // baseURL: "http://10.174.72.199:5000",
     timeout: 5000,
     headers: {
       "Content-Type": `${
