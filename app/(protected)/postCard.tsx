@@ -78,9 +78,8 @@ export default function PostCard({ post, onOpenComments }: Props) {
 
     const renderMedia = () => {
         if (!post?.media_url || post.media_url.length === 0) {
-            return (
-                <Text style={styles.noMedia}>(No Media on this post)</Text>
-            )
+            return (null)
+                // <Text style={styles.noMedia}>(No Media on this post)</Text>
         }
 
         return (
@@ -254,7 +253,7 @@ const styles = StyleSheet.create({
     },
     bottomRow: {
         flexDirection: "row",
-        marginTop: 2,
+        marginTop: 15,
         marginBottom: 2,
         justifyContent: 'space-between',
     },

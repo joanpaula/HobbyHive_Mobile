@@ -105,7 +105,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
-        alignContent: "center"
+        alignContent: "center",
+        backgroundColor: "white"
     },
     header: {
         fontSize: 18,
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
     textInputContainer: {
         flexDirection: "row",
         alignItems: "center",
-        borderWidth: 1,
+        borderWidth: 2,
         borderColor: "#ddd",
         borderRadius: 12,
         paddingHorizontal: 12,
@@ -131,7 +132,8 @@ const styles = StyleSheet.create({
     textinput: {
         flex: 1,
         fontSize: 16,
-        paddingVertical: 8
+        paddingVertical: 8,
+        color: "black"
     },
     button: {
         backgroundColor: '#FF5700',
