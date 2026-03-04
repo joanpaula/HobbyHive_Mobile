@@ -1,60 +1,86 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { Feather, Octicons } from '@expo/vector-icons';
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import { AuthContext } from '@/utils/authContext';
-import { Redirect } from 'expo-router';
+import { Redirect, router, useFocusEffect } from 'expo-router';
 import { createApiClient } from '@/services/apiClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function UserProfile() {
 
+    // auth state (logged in/ logged out) and user state
     const authState = useContext(AuthContext);
-    const {user} = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
 
     const apiClient = createApiClient()
 
     if (!authState.isLoggedIn) {
-        return <Redirect href="/auth/login"/>
+        return <Redirect href="/auth/login" />
     }
 
-    // if (!user) return <Text>Loading...</Text>
+    useFocusEffect(
+    useCallback(() => {
+        user
+    }, [])
+);
 
+    // handle logout
     const handleLogout = async () => {
         try {
             const token = await AsyncStorage.getItem("auth_token");
             if (!token) return;
 
             await apiClient.get("/api/v1.0/logout", {
-                headers: {"x-access-token": token ?? ""}
+                headers: { "x-access-token": token ?? "" }
             })
             authState.logOut();
         } catch (error) {
             console.error("Logout failed", error)
-        } 
+        }
     }
 
+    // handle delete account
+    const handleDelete = async () => {
+        try {
+            await apiClient.delete(`/api/v1.0/users/${user?._id}`,)
+            router.replace("/auth/login")
+        } catch (error) {
+            console.error("Logout failed", error)
+        }
+    }
+
+    // format date
     const formatDate = (isoDate: string) => {
         const date = new Date(isoDate);
-        const day = date.getDate().toString().padStart(2,"0");
-        const month = date.toLocaleDateString("default", {month: "short"});
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = date.toLocaleDateString("default", { month: "short" });
         const year = date.getFullYear();
         return `${day} ${month} ${year}`;
     };
 
     return (
+        // profile page with user details
         <ScrollView style={styles.container}>
             <View style={styles.profile}>
+                {/* PROFILE PICTURE */}
                 <Image
                     style={styles.profileAvatar}
-                    source={require("../../../assets/images/1000590504.jpg")}
+                    source={require("@/assets/images/profile_icon.png")}
                     alt="profile Picture"
                 />
+                {/* USER DETAILS */}
                 <Text style={styles.profileName}> @{user?.username} </Text>
                 <Text style={styles.profileEmail}>Active since: {formatDate(user?.created_at)}</Text>
 
+                {/* EDIT USER DETAILS - send to edit profile page */}
                 <TouchableOpacity
-                    // onPress={}
+                    onPress={() => {
+                        router.push({
+                            pathname: '/(protected)/editProfile',
+                            params: { id: user?._id, user: JSON.stringify(user) }
+                        });
+                    }}
                 >
                     <View style={styles.profileAction}>
                         <Text style={styles.profileActionText}>Edit Profile</Text>
@@ -62,6 +88,7 @@ export default function UserProfile() {
                     </View>
                 </TouchableOpacity>
             </View>
+            {/* USER DETAILS */}
             <View>
                 <Text style={styles.profileHeader}>Personal Information</Text>
 
@@ -69,33 +96,40 @@ export default function UserProfile() {
                     <Text style={styles.inputFieldTitle}>Name</Text>
                     <View style={styles.inputFieldContainer}>
                         <Feather name="user" size={20} color="#999" />
-                        {/* <TextInput/> */}
                         <Text style={styles.inputText}>{user?.name}</Text>
                     </View>
 
                     <Text style={styles.inputFieldTitle}>Email</Text>
                     <View style={styles.inputFieldContainer}>
                         <Octicons name="mail" size={20} color="#999" />
-                        {/* <TextInput/> */}
                         <Text style={styles.inputText}>{user?.email}</Text>
                     </View>
 
                     <Text style={styles.inputFieldTitle}>Password</Text>
                     <View style={styles.inputFieldContainer}>
                         <Octicons name="lock" size={20} color="#999" />
-                        {/* <TextInput/> */}
-                        <Text style={styles.inputText}>{user?.password}</Text>
+                        <Text style={styles.inputText}>{ }</Text>
                     </View>
 
                 </View>
 
             </View>
 
+            {/* LOGOUT BUTTON */}
             <TouchableOpacity
                 onPress={handleLogout}
             >
                 <View style={styles.statusAction}>
                     <Text style={styles.statusActionText}>LOGOUT</Text>
+                </View>
+            </TouchableOpacity>
+
+            {/* DELETE ACCOUNT BUTTON */}
+            <TouchableOpacity
+                onPress={handleDelete}
+            >
+                <View style={styles.statusActionDelete}>
+                    <Text style={styles.statusActionText}>DELETE ACCOUNT</Text>
                 </View>
             </TouchableOpacity>
         </ScrollView>
@@ -153,6 +187,15 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "flex-end",
         backgroundColor: "#FF5700",
+        borderRadius: 20
+    },
+    statusActionDelete: {
+        margin: 12,
+        paddingVertical: 20,
+        paddingHorizontal: 16,
+        alignItems: "center",
+        justifyContent: "flex-end",
+        backgroundColor: "red",
         borderRadius: 20
     },
     statusActionText: {

@@ -3,9 +3,10 @@ import { Redirect, Stack } from "expo-router";
 import { useContext } from "react";
 
 export const unstable_settings = {
-  initialRouteName: "(tabs)", // anchor
+  initialRouteName: "(tabs)",
 };
 
+// the pages that require user to be logged in
 export default function ProtectedLayout() {
   const authState = useContext(AuthContext);
 

@@ -4,9 +4,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createApiClient } from "@/services/apiClient";
 import {jwtDecode} from "jwt-decode"
 
+// auth and user info
 const authStorageKey = "auth_token";
 const userStorageKey = "user_info";
 
+// the structure of token pay load object
 type TokenPayload = {
     sub: string;
     user: string;
@@ -14,6 +16,7 @@ type TokenPayload = {
     exp: number;
 };
 
+// the structure of User tyep object
 type UserType = {
     _id: string;
     name: string;
@@ -24,6 +27,7 @@ type UserType = {
     created_at: any;
 }
 
+// the structure of AuthState object
 type AuthState = {
     isLoggedIn: boolean;
     isReady: boolean;
@@ -32,6 +36,7 @@ type AuthState = {
     logOut: () => Promise<void>;
 };
 
+// to be used in otjee pages
 export const AuthContext = createContext<AuthState>({
     isLoggedIn: false,
     isReady: false,
@@ -41,6 +46,9 @@ export const AuthContext = createContext<AuthState>({
 })
 
 export function AuthProvider({ children }: PropsWithChildren) {
+
+    // set states
+
     const [isReady, setIsReady] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState<UserType | null>(null);
@@ -49,6 +57,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     const apiClient = createApiClient("json")
 
+    // store logged in user token
     const storeToken = async (token: string | null) => {
         try {
             if (token) {
@@ -61,6 +70,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         }
     };
 
+    // store user data 
     const storeUser = async (userData: any | null) => {
         try {
             if (userData) {
@@ -73,6 +83,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         }
     };
 
+    // fetching user details
     const fetchUser = async (id: string) => {
         try {
             const response = await apiClient.get(`/api/v1.0/users/${id}`)
@@ -86,14 +97,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         }
     };
 
-    // const logIn = (token: string, userData?: any) => {
-    //     setIsLoggedIn(true);
-    //     setUser(userData ?? null);
-    //     storeToken(token);
-    //     if (userData) storeUser(userData);
-    //     router.replace("/(protected)/(tabs)");
-    // }
-
+    // what happes when user is logged in
     const logIn = async (token: string) => {
         await storeToken(token);
         setIsLoggedIn(true);
@@ -103,6 +107,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         router.replace("/(protected)/(tabs)");
     };
 
+    // what happens when user is logged out
     const logOut = async () => {
         setIsLoggedIn(false);
         setUser(null);

@@ -5,13 +5,14 @@ import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { createApiClient } from '@/services/apiClient';
 
-// the structure of Post object
-type Post = {
+// the structure of User object
+type User = {
     _id: string;
-    user_id: string;
+    name: string;
     username: string;
-    body_text: string;
-    media_url: string[];
+    password: string;
+    email: string;
+    admin: boolean;
     created_at: string;
 };
 
@@ -23,29 +24,32 @@ export default function EditPost() {
 
     const router = useRouter();
 
-    const { id, post } = useLocalSearchParams();
+    const { id, user } = useLocalSearchParams();
+    const editingProfile: User | null = user ? JSON.parse(user as string) : null;
 
-    // selcted post being edited
-    const editingPost: Post | null = post ? JSON.parse(post as string) : null;
+    const [name, setName] = useState(editingProfile?.name);
+    const [username, setUsername] = useState(editingProfile?.username);
+    const [email, setEmail] = useState(editingProfile?.email);
+    const [password, setPassword] = useState("");
 
-    const [bodyText, setBodyText] = useState(editingPost?.body_text);
 
-    // edit posts functionality
-    const editPost = async () => {
+    const editProfile = async () => {
 
         if (!id) {
-            Alert.alert("Error", "No post to edit");
+            Alert.alert("Error", "No user to edit");
             return;
         }
 
-        // retrieve current body text
-        setBodyText(bodyText);
+        setName(name);
+        setUsername(username)
+        setPassword(password)
+        setEmail(email)
 
-        const response = await apiClient.put(`/api/v1.0/posts/${id}`, { body_text: bodyText });
+        const response = await apiClient.put(`/api/v1.0/users/${id}`, { name, username, password, email });
         console.log(response.data)
 
         if (response.status) {
-            router.replace("/(protected)/(tabs)")
+            router.replace("/(protected)/(tabs)/profile")
         }
     }
 
@@ -55,8 +59,8 @@ export default function EditPost() {
 
             <Stack.Screen
                 options={{
-                    title: 'Edit',
-                    headerTitle: 'Edit',
+                    title: 'EditProfile',
+                    headerTitle: 'Edit Profile',
                     headerTintColor: '#FF5700',
                 }}
             />
@@ -65,10 +69,10 @@ export default function EditPost() {
 
                 <View style={{ width: 60 }} />
 
-                <Text style={styles.header}>Edit Post</Text>
+                <Text style={styles.header}>Edit Profile</Text>
 
                 <Pressable
-                    onPress={editPost}
+                    onPress={editProfile}
                     style={styles.button}>
                     <Text style={styles.buttonText}>Save</Text>
                 </Pressable>
@@ -77,11 +81,26 @@ export default function EditPost() {
 
             <TextInput
                 style={styles.description}
-                placeholder="Share your thoughts..."
+                placeholder="Name..."
                 placeholderTextColor="#999"
-                value={bodyText}
-                onChangeText={setBodyText}
-                multiline
+                value={name}
+                onChangeText={setName}
+            />
+
+            <TextInput
+                style={styles.description}
+                placeholder="Username..."
+                placeholderTextColor="#999"
+                value={username}
+                onChangeText={setUsername}
+            />
+
+            <TextInput
+                style={styles.description}
+                placeholder="Password..."
+                placeholderTextColor="#999"
+                value={password}
+                onChangeText={setPassword}
             />
 
         </View>
@@ -127,9 +146,9 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         borderWidth: 1,
         padding: 10,
-        marginVertical: 20,
+        marginVertical: 10,
         borderRadius: 9,
-        height: 80,
+        height: 50,
         width: 330,
         backgroundColor: "white"
     }
