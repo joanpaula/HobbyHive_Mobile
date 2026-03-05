@@ -4,6 +4,7 @@ import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { createApiClient } from '@/services/apiClient';
+import { usePosts } from '@/utils/postContext';
 
 // the structure of Post object
 type Post = {
@@ -30,11 +31,13 @@ export default function EditPost() {
 
     const [bodyText, setBodyText] = useState(editingPost?.body_text);
 
+    const {showGlobalSnackbar} = usePosts()
+
     // edit posts functionality
     const editPost = async () => {
 
         if (!id) {
-            Alert.alert("Error", "No post to edit");
+            // Alert.alert("Error", "No post to edit");
             return;
         }
 
@@ -45,6 +48,7 @@ export default function EditPost() {
         console.log(response.data)
 
         if (response.status) {
+            showGlobalSnackbar("Post EDITED Successfully! 🐝")
             router.replace("/(protected)/(tabs)")
         }
     }

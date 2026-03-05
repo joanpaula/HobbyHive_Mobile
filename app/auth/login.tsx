@@ -1,10 +1,10 @@
-import { AntDesign, Feather, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
 import { useContext, useState } from 'react';
 import { createApiClient } from '@/services/apiClient';
 import { useRouter } from 'expo-router';
 import { AuthContext } from '@/utils/authContext';
-// import AntDesign from '@expo/vector-icons/AntDesign';
+import { usePosts } from '@/utils/postContext';
 
 const apiClient = createApiClient("json")
 
@@ -19,6 +19,8 @@ export default function loginPage() {
 
     const router = useRouter();
 
+    const {showGlobalSnackbar} = usePosts()
+
     const handleLogin = async () => {
 
         const response = await apiClient.post("/api/v1.0/login", { identifier, password })
@@ -27,9 +29,9 @@ export default function loginPage() {
             if (response.status) {
                 const token = response.data.token;
                 await authContext.logIn(token);
-                Alert.alert("Login successful", `Welcome back!`)
-                // await authContext.logIn(response.data.token)
-                // router.replace("/(protected)/(tabs)")
+                // Alert.alert("Login successful", `Welcome back!`)
+                showGlobalSnackbar(`LOGIN Successfully, Welcome back! 🐝`)
+
             } else {
                 Alert.alert("Login failed", response.data.message || "Unknown error")
             }

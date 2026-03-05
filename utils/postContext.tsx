@@ -4,6 +4,7 @@ import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { View, StyleSheet, Image, FlatList, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import { useFocusEffect } from "expo-router";
 import Feather from '@expo/vector-icons/Feather';
+import { Snackbar } from "react-native-paper";
 
 // // the structure of Post object
 type Post = {
@@ -42,6 +43,10 @@ type PostContextType = {
     comments: Comment[];
     selectedPost: Post | null;
     bottomSheetRef: React.RefObject<BottomSheet | null>
+    showGlobalSnackbar: (message: string) => void
+    snackbarVisible: boolean;                           
+    setSnackbarVisible: (visible: boolean) => void;    
+    snackbarMessage: string;
 }
 
 const PostContext = createContext<PostContextType | undefined>(undefined);
@@ -60,6 +65,16 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [newComment, setNewComment] = useState("");
 
     const [loading, setLoading] = useState(true);
+
+    const [snackbarVisible, setSnackbarVisible] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+
+    const onDismissSnackBar = () => setSnackbarVisible(false);
+
+    const showGlobalSnackbar = (message: string) => {
+        setSnackbarMessage(message)
+        setSnackbarVisible(true)
+    }
 
     // on load, refesh page
     useFocusEffect(
@@ -161,8 +176,24 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <PostContext.Provider value={{ posts, loading, setPosts, refreshPosts, likePost, removePost, comments, openComments, closeComments, selectedPost, bottomSheetRef }}>
+        <PostContext.Provider value={{ posts, loading, setPosts, refreshPosts, likePost, removePost, comments, openComments, closeComments, selectedPost, bottomSheetRef, showGlobalSnackbar, snackbarMessage, snackbarVisible, setSnackbarVisible }}>
             {children}
+
+             <Snackbar
+                    visible={snackbarVisible}
+                    onDismiss={() => setSnackbarVisible}
+                    duration={4000}
+                    action={{
+                        label: "Okay",
+                        labelStyle: {fontSize: 14, color: "white", fontWeight: "600"},
+                        onPress: onDismissSnackBar
+                    }}
+                    elevation={2}
+                    style={{backgroundColor: "#FF5700"}}
+                >
+                    <Text style={{fontSize: 14, color: "white", fontWeight: "600"}}>{snackbarMessage}</Text>
+                    
+                </Snackbar>
 
             {/* COMMENTS - interaction with commnenyt section */}
             {selectedPost && (

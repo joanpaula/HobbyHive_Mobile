@@ -45,7 +45,7 @@ export default function PostCard({ post: initialPost, onOpenComments }: Props) {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     // global states/ fucntions from usePost
-    const { likePost, posts = [], removePost } = usePosts();
+    const { likePost, posts = [], removePost, showGlobalSnackbar } = usePosts();
 
     // get current post being interacted with
     const currentPost = posts?.find(p => p._id === initialPost._id) || initialPost;
@@ -72,6 +72,7 @@ export default function PostCard({ post: initialPost, onOpenComments }: Props) {
 
         if (response.status) {
             removePost(currentPost._id);
+            showGlobalSnackbar("Post DELETED Successfully! 🐝")
             router.replace("/(protected)/(tabs)")
         }
 

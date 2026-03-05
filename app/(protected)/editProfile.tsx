@@ -4,6 +4,7 @@ import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { createApiClient } from '@/services/apiClient';
+import { usePosts } from '@/utils/postContext';
 
 // the structure of User object
 type User = {
@@ -32,11 +33,13 @@ export default function EditPost() {
     const [email, setEmail] = useState(editingProfile?.email);
     const [password, setPassword] = useState("");
 
+    const {showGlobalSnackbar} = usePosts()
+
 
     const editProfile = async () => {
 
         if (!id) {
-            Alert.alert("Error", "No user to edit");
+            // Alert.alert("Error", "No user to edit");
             return;
         }
 
@@ -49,6 +52,7 @@ export default function EditPost() {
         console.log(response.data)
 
         if (response.status) {
+            showGlobalSnackbar("Profile UPDATED Successfully! 🐝")
             router.replace("/(protected)/(tabs)/profile")
         }
     }

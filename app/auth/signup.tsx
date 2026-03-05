@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, Pressable, Alert } from "react-nativ
 import { MaterialCommunityIcons, Feather, AntDesign } from '@expo/vector-icons';
 import { createApiClient } from "@/services/apiClient";
 import { useRouter } from "expo-router";
+import { usePosts } from '@/utils/postContext';
 
 const apiClient = createApiClient("form-data")
 
@@ -14,6 +15,7 @@ export default function SignUpPage() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
+    const {showGlobalSnackbar} = usePosts()
 
     const router = useRouter();
 
@@ -28,7 +30,7 @@ export default function SignUpPage() {
         const response = await apiClient.post("/api/v1.0/signup", formData)
 
         if (response.status) {
-            Alert.alert("Signup successful", `Welcome to HobbyHive ${username}`)
+            showGlobalSnackbar(`SIGNUP successful\nWelcome to HobbyHive ${username.toUpperCase()}! 🐝`)
             router.replace("/auth/login")
         }
     };

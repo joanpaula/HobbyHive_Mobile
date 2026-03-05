@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
+import { Snackbar } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { Button, Image } from 'react-native'
@@ -9,6 +10,7 @@ import { getContentType } from '@/services/globals';
 import { useContext } from 'react';
 import { AuthContext } from '@/utils/authContext';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { usePosts } from '@/utils/postContext';
 
 // the structure of Hobby object
 type Hobby = {
@@ -47,6 +49,8 @@ export default function CreatePosts() {
     const [openPicker, setOpenPicker] = useState(false);
     const [pickerValue, setPickerValue] = useState<string[]>([]);
     const [items, setItems] = useState<PickerItem[]>([]);
+
+    const {showGlobalSnackbar} = usePosts()
 
     useEffect(() => {
 
@@ -87,11 +91,13 @@ export default function CreatePosts() {
                     contentType: contentType
                 });
 
-                const { uploadUrl, key } = presignRes.data;
+                const { uploadUrl, key } = presignRes.data; // unique s3 path
 
+                // covert uri to blob
                 const fileResponse = await fetch(image.uri);
                 const blob = await fileResponse.blob();
 
+                // upload to aws s3
                 const s3_upload_repsonse = await fetch(uploadUrl, {
                     method: "PUT",
                     body: blob,
@@ -100,7 +106,7 @@ export default function CreatePosts() {
                     }
                 });
 
-                mediaKeys.push(key)
+                mediaKeys.push(key) // key to linnk to post later
 
             }
         }
@@ -125,7 +131,8 @@ export default function CreatePosts() {
         try {
             const response = await postApiClient.post("/api/v1.0/posts/create", postFormData)
             console.log(response.data)
-            alert("Post created successfully!");
+            // alert("Post created successfully!");
+            showGlobalSnackbar("Post CREATED Successfully! 🐝")
             setBodyText("");
             setImages([])
             setPickerValue([])
@@ -133,6 +140,7 @@ export default function CreatePosts() {
         } catch (error: any) {
             console.log(error.response?.status)
             console.log(error.response?.data)
+            showGlobalSnackbar("Failed to create post. Please try again.");
         }
 
     }
@@ -177,6 +185,7 @@ export default function CreatePosts() {
                     style={styles.button}>
                     <Text style={styles.buttonText}>{"Post"}</Text>
                 </Pressable>
+                
 
             </View>
 
