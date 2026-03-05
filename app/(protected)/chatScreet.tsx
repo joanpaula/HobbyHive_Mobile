@@ -51,7 +51,7 @@ export default function ChatBot() {
     // ending message 2 "ai"
     const endMessage: Message = {
         id: generateId("closing-2"),
-        text: "Come back soon! Bebe the chatbot bee xx",
+        text: "Come back soon! Bebe the chatbot bee 🐝 xx",
         sender: "ai"
     }
 
@@ -76,7 +76,7 @@ export default function ChatBot() {
             const aiMessage: Message = {
                 id: generateId("ai"),
                 text: data?.hobbies?.length
-                    ? `You should try these:\n${data.hobbies.join("\n-> ")}`
+                    ? `You should try these:\n-> ${data.hobbies.join("\n-> ")}`
                     : "No suggestion found.",
                 sender: "ai"
             };

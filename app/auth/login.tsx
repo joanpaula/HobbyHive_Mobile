@@ -1,5 +1,5 @@
 import { AntDesign, Feather } from '@expo/vector-icons';
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Alert, Image } from 'react-native';
 import { useContext, useState } from 'react';
 import { createApiClient } from '@/services/apiClient';
 import { useRouter } from 'expo-router';
@@ -48,6 +48,10 @@ export default function loginPage() {
     return (
         <View style={styles.container}>
             <View>
+                <Image
+                style={{width: 360, height: 160}}
+                    source={require("@/assets/images/HobbyHiveLogo.png")}
+                />
                 <Text style={styles.header}>
                     Welcome Back! 🐝
                 </Text>

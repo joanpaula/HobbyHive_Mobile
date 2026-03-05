@@ -228,6 +228,7 @@ export default function Places() {
                             placeholderTextColor="gray"
                             onChangeText={setSearchQuery}
                             value={searchQuery}
+                            inputStyle={{color: "black"}}
                             onSubmitEditing={fetchNearbyPlaces}
                             onIconPress={fetchNearbyPlaces}
                             onClearIconPress={() => {

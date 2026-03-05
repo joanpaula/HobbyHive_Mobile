@@ -3,6 +3,7 @@ import { createApiClient } from '@/services/apiClient';
 import { useEffect, useState } from 'react';
 import { Searchbar } from 'react-native-paper';
 import { useRouter } from 'expo-router';
+import { black } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 
 // the structure of Hobby object
 type Hobby = {
@@ -63,6 +64,7 @@ export default function Communities() {
                     placeholder="Where's your hive?"
                     placeholderTextColor="gray"
                     onChangeText={setSearchQuery}
+                    inputStyle={{color: "black"}}
                     value={searchQuery}
                     onClearIconPress={() => {
                         setSearchQuery("");

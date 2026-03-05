@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { View, Text, StyleSheet, TextInput, Pressable, Alert } from "react-native"
+import { View, Text, StyleSheet, TextInput, Pressable, Alert, Image } from "react-native"
 import { MaterialCommunityIcons, Feather, AntDesign } from '@expo/vector-icons';
 import { createApiClient } from "@/services/apiClient";
 import { useRouter } from "expo-router";
@@ -15,7 +15,7 @@ export default function SignUpPage() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
-    const {showGlobalSnackbar} = usePosts()
+    const { showGlobalSnackbar } = usePosts()
 
     const router = useRouter();
 
@@ -42,6 +42,10 @@ export default function SignUpPage() {
     return (
         <View style={styles.container}>
             <View>
+                <Image
+                    style={{ width: 360, height: 160 }}
+                    source={require("@/assets/images/HobbyHiveLogo.png")}
+                />
                 <Text style={styles.header}>
                     Welcome To HobbyHive! 🐝
                 </Text>
@@ -94,7 +98,7 @@ export default function SignUpPage() {
                 />
             </View>
 
-            <View style={{padding: 10}}>
+            <View style={{ padding: 10 }}>
                 <Pressable
                     onPress={handleSignup}
                     style={styles.button}
@@ -107,7 +111,7 @@ export default function SignUpPage() {
                 <Text
                     onPress={() => router.push("/auth/login")}
                     style={{ textAlign: "center" }}>Already registered?
-                    <Text style={{fontWeight: "bold"}}>Login</Text>
+                    <Text style={{ fontWeight: "bold" }}>Login</Text>
                 </Text>
             </View>
 
