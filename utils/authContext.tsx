@@ -111,8 +111,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const logOut = async () => {
         setIsLoggedIn(false);
         setUser(null);
-        storeToken(null);
-        storeUser(null);
+        await storeToken(null);
+        await storeUser(null);
         router.replace("/auth/login");
     }
 

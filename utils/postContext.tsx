@@ -44,8 +44,8 @@ type PostContextType = {
     selectedPost: Post | null;
     bottomSheetRef: React.RefObject<BottomSheet | null>
     showGlobalSnackbar: (message: string) => void
-    snackbarVisible: boolean;                           
-    setSnackbarVisible: (visible: boolean) => void;    
+    snackbarVisible: boolean;
+    setSnackbarVisible: (visible: boolean) => void;
     snackbarMessage: string;
 }
 
@@ -128,12 +128,16 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         refreshPosts();
     }, []);
 
+
     // call get comments endpoint and open bottom sheet
     const openComments = async (post: Post) => {
         setSelectedPost(post);
         const response = await apiClient.get(`/api/v1.0/posts/${post._id}/comments`);
         setComments(response.data);
+
+        setTimeout(() => {
         bottomSheetRef.current?.expand();
+    }, 0);
     };
 
     // what hanppes whe commennt buttom sheet is closed
@@ -179,21 +183,21 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         <PostContext.Provider value={{ posts, loading, setPosts, refreshPosts, likePost, removePost, comments, openComments, closeComments, selectedPost, bottomSheetRef, showGlobalSnackbar, snackbarMessage, snackbarVisible, setSnackbarVisible }}>
             {children}
 
-             <Snackbar
-                    visible={snackbarVisible}
-                    onDismiss={() => setSnackbarVisible}
-                    duration={4000}
-                    action={{
-                        label: "Okay",
-                        labelStyle: {fontSize: 14, color: "white", fontWeight: "600"},
-                        onPress: onDismissSnackBar
-                    }}
-                    elevation={2}
-                    style={{backgroundColor: "#FF5700"}}
-                >
-                    <Text style={{fontSize: 14, color: "white", fontWeight: "600"}}>{snackbarMessage}</Text>
-                    
-                </Snackbar>
+            <Snackbar
+                visible={snackbarVisible}
+                onDismiss={() => setSnackbarVisible(false)}
+                duration={4000}
+                action={{
+                    label: "Okay",
+                    labelStyle: { fontSize: 14, color: "white", fontWeight: "600" },
+                    onPress: onDismissSnackBar
+                }}
+                elevation={2}
+                style={{ backgroundColor: "#FF5700" }}
+            >
+                <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>{snackbarMessage}</Text>
+
+            </Snackbar>
 
             {/* COMMENTS - interaction with commnenyt section */}
             {selectedPost && (
